@@ -21,21 +21,20 @@ mock.json是一个针对域名作的代理服务配置文件,内容为
             包含 http:// 或 https://  -> proxy_pass
     }
 ###
-module.exports = ( options ) ->
+module.exports = (options) ->
+    return noop unless options.mock and utils.path.exists options.mock
 
-    return noop unless options.mock or utils.path.exists options.mock
     utils.logger.log "成功加载 mock 配置 #{options.mock}"
-    mock_file = utils.file.io.readbymtime( options.mock )
+    mock_file = utils.file.io.readbymtime(options.mock)
 
-    return ( req , res , next ) ->
-
+    return (req, res, next) ->
         sandbox =
             module :
                 exports : {}
 
         # 得到配置文件
         try
-            vm.runInNewContext( exjson( mock_file() ) , sandbox )
+            vm.runInNewContext(exjson(mock_file()), sandbox)
         catch err
             sandbox.module.exports = {}
             utils.logger.error "mock 配置文件出错 #{err.toString()}"
@@ -177,14 +176,14 @@ ACTION =
 # ============================
 
 
-noop = ( req , res , next ) ->
+noop = (req, res, next) ->
     next()
 
-exjson = module.exports.exjson = ( txt ) ->
+exjson = module.exports.exjson = (txt) ->
     def = ""
     count = 0
-    return txt.replace new RegExp( "\/(.*)\/([ig]*)(\\s*:\\s*)(.*)" , "ig") , ( $0 , $1 , $2 , $3 , $4 ) ->
-            return util.inspect( $1 + "^^^" + $2 ) + $3 + $4
+    return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)" , "ig"), ($0, $1, $2, $3, $4) ->
+            return util.inspect($1 + "^^^" + $2) + $3 + $4
 
 get_actions = ( actions ) ->
     return switch
