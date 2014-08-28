@@ -54,25 +54,25 @@ module.exports = (options) ->
 do_actions = (result, actions, req, res, options) ->
     actions = switch
         when typeof actions is 'string' then get_actions actions
-        when util.isArray actions then utils.extend( {} , get_actions i for i in actions )
+        when util.isArray actions then utils.extend({}, get_actions i for i in actions)
         else actions
 
-    jobs = ( { action : ACTION[action_key] , user_config : action_config } for action_key , action_config of actions when ACTION[action_key] )
+    jobs = ({action: ACTION[action_key], user_config: action_config} for action_key, action_config of actions when ACTION[action_key])
 
     context =
-        req : req
-        res : res
-        result : result
+        req     : req
+        res     : res
+        result  : result
         options : options
 
-    utils.async.series jobs , ( item , done ) ->
-                item.action( item.user_config , context , done )
-            , ( err ) ->
-                if err
-                    utils.logger.error err
-                    res.end( err )
-                else
-                    res.end()
+    utils.async.series jobs, (item ,done) ->
+        item.action(item.user_config, context, done)
+        , (err) ->
+            if err
+                utils.logger.error err
+                res.end err 
+            else
+                res.end()
 
 
 
