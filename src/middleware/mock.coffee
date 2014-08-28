@@ -66,7 +66,7 @@ do_actions = (result, actions, req, res, options) ->
         options : options
 
     utils.async.series jobs, (item ,done) ->
-        item.action(item.user_config, context, done)
+            item.action(item.user_config, context, done)
         , (err) ->
             if err
                 utils.logger.error err
