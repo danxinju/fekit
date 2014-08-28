@@ -28,81 +28,81 @@ module.exports = ( options ) ->
     mock_file = utils.file.io.readbymtime( options.mock )
 
     return ( req , res , next ) ->
-        
-        sandbox = 
-            module :  
+
+        sandbox =
+            module :
                 exports : {}
-                
+
         # 得到配置文件
-        try 
+        try
             vm.runInNewContext( exjson( mock_file() ) , sandbox )
-        catch err 
+        catch err
             sandbox.module.exports = {}
             utils.logger.error "mock 配置文件出错 #{err.toString()}"
-        
+
         # 检查匹配项
         url = req.url
         for key , actions of sandbox.module.exports
             n = key.split "^^^"
-            key = new RegExp( n[0] , n[1] ) 
-            result = url.match( key ) 
+            key = new RegExp( n[0] , n[1] )
+            result = url.match( key )
             return do_actions( result , actions , req , res , options ) if result
 
         next()
 
 
 ## 处理所有 action
-do_actions = ( result , actions , req , res , options ) -> 
+do_actions = ( result , actions , req , res , options ) ->
 
     actions = switch
-        when typeof actions is 'string' then get_actions actions 
-        when util.isArray actions then utils.extend( {} , get_actions i for i in actions ) 
+        when typeof actions is 'string' then get_actions actions
+        when util.isArray actions then utils.extend( {} , get_actions i for i in actions )
         else actions
 
     jobs = ( { action : ACTION[action_key] , user_config : action_config } for action_key , action_config of actions when ACTION[action_key] )
 
-    context = 
-        req : req 
+    context =
+        req : req
         res : res
         result : result
         options : options
-    
+
     utils.async.series jobs , ( item , done ) ->
                 item.action( item.user_config , context , done )
             , ( err ) ->
-                if err 
+                if err
                     utils.logger.error err
                     res.end( err )
-                else 
+                else
                     res.end()
 
 
 
 ## 所有 action 的配置解决方案
-ACTION = 
+ACTION =
 
     ###
         配置案例
-        proxy_pass : 'http://l-hslist.corp.qunar.com'  
+        proxy_pass : 'http://l-hslist.corp.qunar.com'
     ###
     "proxy_pass" : ( user_config , context , done ) ->
 
-        conf = 
-            url : '' 
+        conf =
+            url : ''
             set_header : {}
 
         conf.url = user_config if typeof user_config is 'string'
         conf.urlObject = urlparser.parse( conf.url )
 
         # --- 处理 request 及 proxy_option
-        proxy_option = 
+        proxy_option =
             url : ''
             headers : {}
-        req = context.req 
+        req = context.req
 
         proxy_option.url = urlparser.format( utils.extend( {} , conf.urlObject , urlparser.parse(req.url) ) )
         proxy_option.headers = utils._.extend( {} , req.headers , {
-                host : conf.urlObject.host 
+                host : conf.urlObject.host
             } , conf.set_header )
 
         # --- 针对不同请求，进行不同处理
@@ -111,8 +111,8 @@ ACTION =
                 r = request.get(proxy_option).pipe(context.res)
             when 'POST'
                 r = request.post(proxy_option).pipe(context.res)
-                
-        r.on 'end' , () ->    
+
+        r.on 'end' , () ->
             done()
 
 
@@ -132,7 +132,7 @@ ACTION =
         配置案例
         "action" : "./url.js"
 
-        在 url.js 中，必须存在 
+        在 url.js 中，必须存在
         module.exports = function( req , res , user_config , context ) {
             // res.write("hello");
         }
@@ -142,13 +142,13 @@ ACTION =
         act_file = read( context , user_config )
 
         #执行该文件
-        sandbox = 
-            module : 
+        sandbox =
+            module :
                 exports : noop
 
         vm.runInNewContext( act_file , sandbox )
 
-        sandbox.module.exports?( context.req , context.res , user_config , context ) 
+        sandbox.module.exports?( context.req , context.res , user_config , context )
 
         done()
 
@@ -189,7 +189,7 @@ exjson = module.exports.exjson = ( txt ) ->
 get_actions = ( actions ) ->
     return switch
             when actions.indexOf('http://') > -1 or actions.indexOf('https://') > -1 then { proxy_pass : actions }
-            when utils.path.extname( actions ) is ".mockjson" then { mockjson : actions } 
+            when utils.path.extname( actions ) is ".mockjson" then { mockjson : actions }
             when utils.path.extname( actions ) is ".json" then { raw : actions }
             when utils.path.extname( actions ) is ".js" then { action : actions }
 
