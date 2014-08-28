@@ -51,8 +51,7 @@ module.exports = (options) ->
 
 
 ## 处理所有 action
-do_actions = ( result , actions , req , res , options ) ->
-
+do_actions = (result, actions, req, res, options) ->
     actions = switch
         when typeof actions is 'string' then get_actions actions
         when util.isArray actions then utils.extend( {} , get_actions i for i in actions )
@@ -185,12 +184,16 @@ exjson = module.exports.exjson = (txt) ->
     return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)", "ig"), ($0, $1, $2, $3, $4) ->
         return util.inspect($1 + "^^^" + $2) + $3 + $4
 
-get_actions = ( actions ) ->
+get_actions = (actions) ->
     return switch
-            when actions.indexOf('http://') > -1 or actions.indexOf('https://') > -1 then { proxy_pass : actions }
-            when utils.path.extname( actions ) is ".mockjson" then { mockjson : actions }
-            when utils.path.extname( actions ) is ".json" then { raw : actions }
-            when utils.path.extname( actions ) is ".js" then { action : actions }
+        when (actions.indexOf 'http://') > -1 or (actions.indexOf 'https://') > -1
+            {proxy_pass: actions}
+        when (utils.path.extname actions) is ".mockjson"
+            {mockjson: actions}
+        when (utils.path.extname actions) is ".json"
+            {raw: actions}
+        when (utils.path.extname actions) is ".js"
+            {action: actions}
 
 read = ( context , partial_path ) ->
     dir = utils.path.dirname context.options.mock
