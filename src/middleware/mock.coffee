@@ -70,7 +70,7 @@ do_actions = (result, actions, req, res, options) ->
         , (err) ->
             if err
                 utils.logger.error err
-                res.end err 
+                res.end err
             else
                 res.end()
 
