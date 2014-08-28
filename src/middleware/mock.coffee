@@ -43,9 +43,9 @@ module.exports = (options) ->
         url = req.url
         for key , actions of sandbox.module.exports
             n = key.split "^^^"
-            key = new RegExp( n[0] , n[1] )
-            result = url.match( key )
-            return do_actions( result , actions , req , res , options ) if result
+            key = new RegExp(n[0], n[1])
+            result = url.match(key)
+            return do_actions(result, actions, req, res, options) if result
 
         next()
 
@@ -182,8 +182,8 @@ noop = (req, res, next) ->
 exjson = module.exports.exjson = (txt) ->
     def = ""
     count = 0
-    return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)" , "ig"), ($0, $1, $2, $3, $4) ->
-            return util.inspect($1 + "^^^" + $2) + $3 + $4
+    return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)", "ig"), ($0, $1, $2, $3, $4) ->
+        return util.inspect($1 + "^^^" + $2) + $3 + $4
 
 get_actions = ( actions ) ->
     return switch
