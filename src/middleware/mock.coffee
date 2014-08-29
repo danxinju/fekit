@@ -49,7 +49,6 @@ module.exports = (options) ->
 
         next()
 
-
 ## 处理所有 action
 do_actions = (result, actions, req, res, options) ->
     actions = switch
@@ -168,7 +167,7 @@ noop = (req, res, next) ->
     next()
 
 exjson = module.exports.exjson = (txt) ->
-    return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)", "ig"), ($0, $1, $2, $3, $4) ->
+    return txt.replace new RegExp("\/(.+)\/([ig]*)(\\s*:\\s*)(.+)", "ig"), ($0, $1, $2, $3, $4) ->
         return util.inspect($1 + "^^^" + $2) + $3 + $4
 
 get_actions = (actions) ->
