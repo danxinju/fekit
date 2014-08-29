@@ -41,7 +41,7 @@ module.exports = (options) ->
 
         # 检查匹配项
         url = req.url
-        for key , actions of sandbox.module.exports
+        for key, actions of sandbox.module.exports
             n = key.split "^^^"
             key = new RegExp(n[0], n[1])
             result = url.match(key)
@@ -53,11 +53,17 @@ module.exports = (options) ->
 ## 处理所有 action
 do_actions = (result, actions, req, res, options) ->
     actions = switch
-        when typeof actions is 'string' then get_actions actions
-        when util.isArray actions then utils.extend({}, get_actions i for i in actions)
-        else actions
+        when typeof actions is 'string'
+            get_actions actions
+        when util.isArray actions
+            utils.extend({}, get_actions i for i in actions)
+        else
+            actions
 
-    jobs = ({action: ACTION[action_key], user_config: action_config} for action_key, action_config of actions when ACTION[action_key])
+    jobs = ({
+            action: ACTION[action_key],
+            user_config: action_config
+        } for action_key, action_config of actions when ACTION[action_key])
 
     context =
         req     : req
@@ -162,14 +168,12 @@ noop = (req, res, next) ->
     next()
 
 exjson = module.exports.exjson = (txt) ->
-    def = ""
-    count = 0
     return txt.replace new RegExp("\/(.*)\/([ig]*)(\\s*:\\s*)(.*)", "ig"), ($0, $1, $2, $3, $4) ->
         return util.inspect($1 + "^^^" + $2) + $3 + $4
 
 get_actions = (actions) ->
     return switch
-        when (actions.indexOf 'http://') > -1 or (actions.indexOf 'https://') > -1
+        when (actions.indexOf 'http://') is 0 or (actions.indexOf 'https://') is 0
             {proxy_pass: actions}
         when (utils.path.extname actions) is ".mockjson"
             {mockjson: actions}
