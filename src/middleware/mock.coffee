@@ -83,24 +83,22 @@ ACTION =
         配置案例
         proxy_pass : 'http://l-hslist.corp.qunar.com'
     ###
-    "proxy_pass" : ( user_config , context , done ) ->
-
+    "proxy_pass": (user_config, context, done) ->
         conf =
-            url : ''
-            set_header : {}
+            url: ''
+            set_header: {}
 
         conf.url = user_config if typeof user_config is 'string'
-        conf.urlObject = urlparser.parse( conf.url )
+        conf.urlObject = urlparser.parse(conf.url)
 
         # --- 处理 request 及 proxy_option
         proxy_option =
-            url : ''
-            headers : {}
+            url: ''
+            headers: {}
         req = context.req
-
-        proxy_option.url = urlparser.format( utils.extend( {} , conf.urlObject , urlparser.parse(req.url) ) )
-        proxy_option.headers = utils._.extend( {} , req.headers , {
-                host : conf.urlObject.host
+        proxy_option.url = urlparser.format(utils.extend({}, conf.urlObject, urlparser.parse(req.url)))
+        proxy_option.headers = utils._.extend({}, req.headers, {
+                host: conf.urlObject.host
             } , conf.set_header )
 
         # --- 针对不同请求，进行不同处理
@@ -110,7 +108,7 @@ ACTION =
             when 'POST'
                 r = request.post(proxy_option).pipe(context.res)
 
-        r.on 'end' , () ->
+        r.on 'end', () ->
             done()
 
 
@@ -118,12 +116,9 @@ ACTION =
         配置案例
         "raw" : "./url.json"
     ###
-    "raw" : ( user_config , context , done ) ->
-
+    "raw": (user_config, context, done) ->
         context.res.setHeader "Content-Type", "application/json"
-
-        context.res.write( read( context , user_config ) )
-
+        context.res.write(read(context, user_config))
         done()
 
     ###
@@ -135,19 +130,14 @@ ACTION =
             // res.write("hello");
         }
     ###
-    "action" : ( user_config , context , done ) ->
-
-        act_file = read( context , user_config )
-
+    "action": (user_config, context, done) ->
+        act_file = read(context, user_config)
         #执行该文件
         sandbox =
-            module :
-                exports : noop
-
-        vm.runInNewContext( act_file , sandbox )
-
-        sandbox.module.exports?( context.req , context.res , user_config , context )
-
+            module:
+                exports: noop
+        vm.runInNewContext(act_file, sandbox)
+        sandbox.module.exports?(context.req, context.res, user_config, context)
         done()
 
     ###
@@ -156,20 +146,13 @@ ACTION =
 
         使用方式见：https://github.com/mennovanslooten/mockJSON
     ###
-    "mockjson" : ( user_config , context , done ) ->
-
-        json = utils.file.io.readJSON( user_config )
-
+    "mockjson": (user_config, context, done) ->
+        json = utils.file.io.readJSON(user_config)
         context.res.setHeader "Content-Type", "application/json"
-
-        callback = val for key , val of context.req.query when ~key.indexOf('callback')
-
-        jsonstr = JSON.stringify helper_mockjson.mockJSON.generateFromTemplate( json )
-
+        callback = val for key, val of context.req.query when ~key.indexOf('callback')
+        jsonstr = JSON.stringify helper_mockjson.mockJSON.generateFromTemplate(json)
         jsonstr = "#{callback}(#{jsonstr})" if callback
-
-        context.res.write( jsonstr )
-
+        context.res.write(jsonstr)
         done()
 
 # ============================
