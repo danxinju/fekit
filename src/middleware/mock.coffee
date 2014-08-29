@@ -195,6 +195,6 @@ get_actions = (actions) ->
         when (utils.path.extname actions) is ".js"
             {action: actions}
 
-read = ( context , partial_path ) ->
+read = (context, partial_path) ->
     dir = utils.path.dirname context.options.mock
-    return utils.file.io.read( utils.path.join( dir , partial_path ) )
+    return utils.file.io.read(utils.path.join(dir, partial_path))
