@@ -104,10 +104,10 @@ ACTION =
             url: ''
             headers: {}
         req = context.req
-        proxy_option.url = urlparser.format(utils.extend({}, conf.urlObject, urlparser.parse(req.url)))
+        proxy_option.url = urlparser.format(utils.extend({}, urlparser.parse(req.url), conf.urlObject))
         proxy_option.headers = utils._.extend({}, req.headers, {
                 host: conf.urlObject.host
-            } , conf.set_header )
+            } , conf.set_header)
 
         # --- 针对不同请求，进行不同处理
         switch req.method
