@@ -55,7 +55,10 @@ do_actions = (result, actions, req, res, options) ->
         when typeof actions is 'string'
             get_actions actions
         when util.isArray actions
-            utils.extend({}, get_actions i for i in actions)
+            a = {}
+            for k in (get_actions i for i in actions)
+                a = utils.extend(a, k)
+            a
         else
             actions
 
@@ -167,7 +170,7 @@ noop = (req, res, next) ->
     next()
 
 exjson = module.exports.exjson = (txt) ->
-    return txt.replace new RegExp("\/(.+)\/([ig]*)(\\s*:\\s*)(.+)", "ig"), ($0, $1, $2, $3, $4) ->
+    return txt.replace new RegExp("\/(.+)\/([i]*)(\\s*:\\s*)(.+)", "ig"), ($0, $1, $2, $3, $4) ->
         return util.inspect($1 + "^^^" + $2) + $3 + $4
 
 get_actions = (actions) ->
