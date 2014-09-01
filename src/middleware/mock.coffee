@@ -166,11 +166,16 @@ ACTION =
         使用方式见：https://github.com/mennovanslooten/mockJSON
     ###
     "mockjson": (user_config, context, done) ->
-        context.res.setHeader "Content-Type", "application/json"
+        jsonp = context.rule.jsonp or 'callback'
+        callback = val for key, val of context.req.query when ~key.indexOf(jsonp)
         json = utils.file.io.readJSON(user_config)
-        callback = val for key, val of context.req.query when ~key.indexOf('callback')
         jsonstr = JSON.stringify helper_mockjson.mockJSON.generateFromTemplate(json)
-        jsonstr = "#{callback}(#{jsonstr})" if callback
+        context.res.setHeader "Content-Type", "application/json"
+
+        if callback
+            context.res.setHeader "Content-Type", "application/x-javascript"
+            jsonstr = "#{callback}(#{jsonstr})" if callback
+
         context.res.write(jsonstr)
         done()
 
