@@ -172,7 +172,7 @@ ACTION =
             module:
                 exports: noop
         vm.runInNewContext(act_file, sandbox)
-        sandbox.module.exports?(context.req, context.res, user_config, context)
+        sandbox.module.exports?(context.req, context.res, context)
         done()
 
     ###
