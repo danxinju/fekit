@@ -8,6 +8,11 @@ module.exports = {
             pattern: "/exact/match/5",
             respondwith: "exact.json",
             jsonp: "__jscallback"
+        },
+        {
+            pattern: /\/regex\/match\/\d+/,
+            respondwith: "regex.json",
+            jsonp: "__jscallback"
         }
     ]
 };
