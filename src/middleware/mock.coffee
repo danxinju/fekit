@@ -4,6 +4,7 @@ vm = require 'vm'
 utils = require "../util"
 util = require "util"
 helper_mockjson = require "./helper_mockjson"
+qs = require "querystring"
 
 ###
 启动 fekit server 时，可以通过读取配置，进行不同的mock处理
@@ -109,13 +110,20 @@ ACTION =
 
         conf.url = user_config if typeof user_config is 'string'
         conf.urlObject = urlparser.parse(conf.url)
+        conf.qsObject = qs.parse conf.urlObject.query
 
         # --- 处理 request 及 proxy_option
         proxy_option =
             url: ''
             headers: {}
         req = context.req
-        proxy_option.url = urlparser.format(utils.extend({}, urlparser.parse(req.url), conf.urlObject))
+
+        urlObject = urlparser.parse req.url
+        qsObject = qs.parse urlObject.query
+
+        conf.urlObject.query = qs.stringify(utils.extend({}, conf.qsObject, qsObject))
+        conf.urlObject.search = "?#{conf.urlObject.query}"
+        proxy_option.url = urlparser.format(conf.urlObject)
         proxy_option.headers = utils._.extend({}, req.headers, {
                 host: conf.urlObject.host
             } , conf.set_header)
