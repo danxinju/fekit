@@ -12,7 +12,7 @@ helper_mockjson = require "./helper_mockjson"
 mock.json是一个针对域名作的代理服务配置文件,内容为
 
     module.exports = {
-        * key 可以是正则表达式, 也可以是字符串（但仍然会转为正则表达式执行）
+        * key 可以是正则表达式, 也可以是字符串
         * value 以不同的配置，进行不同的操作，具体见 ACTION
         * 默认的 value 是string, uri以后缀名或内容判断 ACTION
             .json -> raw
@@ -40,12 +40,23 @@ module.exports = (options) ->
             utils.logger.error "mock 配置文件出错 #{err.toString()}"
 
         # 检查匹配项
+        rules = sandbox.module.exports.rules or []
+        delete sandbox.module.exports.rules
+
+        for key, action of sandbox.module.exports
+            pieces = key.split "^^^"
+            pattern = if pieces.length is 2 then RegExp pieces... else key
+            rules.push
+                pattern: pattern,
+                respondwith: action
+
         url = req.url
-        for key, actions of sandbox.module.exports
-            n = key.split "^^^"
-            key = new RegExp(n[0], n[1])
-            result = url.match(key)
-            return do_actions(result, actions, req, res, options) if result
+        for rule in rules
+            if util.isRegExp rule.pattern
+                result = url.match rule.pattern
+            else
+                result = url is rule.pattern
+            return do_actions(result, rule.respondwith, req, res, options) if result
 
         next()
 
