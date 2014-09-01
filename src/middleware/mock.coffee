@@ -55,20 +55,22 @@ module.exports = (options) ->
                 result = url.match rule.pattern
             else
                 result = url is rule.pattern
-            return do_actions(result, rule.respondwith, req, res, options) if result
+            return do_actions(result, rule, req, res, options) if result
 
         next()
 
 ## 处理所有 action
-do_actions = (result, actions, req, res, options) ->
+do_actions = (result, rule, req, res, options) ->
+    actions = rule.respondwith
     actions = switch
         when typeof actions is 'string'
             get_actions actions
-        when util.isArray actions
-            a = {}
-            for k in (get_actions i for i in actions)
-                a = utils.extend(a, k)
-            a
+        # 多种 action
+        # when util.isArray actions
+        #     a = {}
+        #     for k in (get_actions i for i in actions)
+        #         a = utils.extend(a, k)
+        #     a
         else
             actions
 
@@ -81,6 +83,7 @@ do_actions = (result, actions, req, res, options) ->
         req     : req
         res     : res
         result  : result
+        rule    : rule
         options : options
 
     utils.async.series jobs, (item ,done) ->
@@ -163,8 +166,8 @@ ACTION =
         使用方式见：https://github.com/mennovanslooten/mockJSON
     ###
     "mockjson": (user_config, context, done) ->
-        json = utils.file.io.readJSON(user_config)
         context.res.setHeader "Content-Type", "application/json"
+        json = utils.file.io.readJSON(user_config)
         callback = val for key, val of context.req.query when ~key.indexOf('callback')
         jsonstr = JSON.stringify helper_mockjson.mockJSON.generateFromTemplate(json)
         jsonstr = "#{callback}(#{jsonstr})" if callback
