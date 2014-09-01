@@ -10,7 +10,6 @@ helper_mockjson = require "./helper_mockjson"
 如: fekit server -m ~/myurl.conf
 
 mock.json是一个针对域名作的代理服务配置文件,内容为
-
     module.exports = {
         * key 可以是正则表达式, 也可以是字符串
         * value 以不同的配置，进行不同的操作，具体见 ACTION
@@ -94,10 +93,8 @@ do_actions = (result, actions, req, res, options) ->
                 res.end()
 
 
-
 ## 所有 action 的配置解决方案
 ACTION =
-
     ###
         配置案例
         proxy_pass : 'http://l-hslist.corp.qunar.com'
@@ -173,8 +170,6 @@ ACTION =
         jsonstr = "#{callback}(#{jsonstr})" if callback
         context.res.write(jsonstr)
         done()
-
-# ============================
 
 
 noop = (req, res, next) ->
