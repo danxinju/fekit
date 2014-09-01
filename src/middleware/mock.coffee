@@ -136,8 +136,16 @@ ACTION =
         "raw" : "./url.json"
     ###
     "raw": (user_config, context, done) ->
+        jsonp = context.rule.jsonp or 'callback'
+        callback = val for key, val of context.req.query when (key is jsonp)
+        jsonstr = read(context, user_config)
         context.res.setHeader "Content-Type", "application/json"
-        context.res.write(read(context, user_config))
+
+        if callback
+            context.res.setHeader "Content-Type", "application/x-javascript"
+            jsonstr = "#{callback}(#{jsonstr})" if callback
+
+        context.res.write(jsonstr)
         done()
 
     ###
