@@ -167,7 +167,7 @@ ACTION =
     ###
     "mockjson": (user_config, context, done) ->
         jsonp = context.rule.jsonp or 'callback'
-        callback = val for key, val of context.req.query when ~key.indexOf(jsonp)
+        callback = val for key, val of context.req.query when (key is jsonp)
         json = utils.file.io.readJSON(user_config)
         jsonstr = JSON.stringify helper_mockjson.mockJSON.generateFromTemplate(json)
         context.res.setHeader "Content-Type", "application/json"
