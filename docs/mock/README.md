@@ -25,7 +25,7 @@
 * key 或 `pattern` 属性是字符串，准确匹配 url（包括 query）
 * `pattern` 属性是正则表达式，正则匹配 url
 * `jsonp` 属性指定 jsonp 请求的回调函数名，默认为 `"callback"`
-* value 或 `respondwith` 属性有解决方案：
+* value 或 `respondwith` 属性有如下方案：
 
 
 ### raw
