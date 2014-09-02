@@ -55,8 +55,7 @@ module.exports = (options) ->
             if util.isRegExp rule.pattern
                 result = url.match rule.pattern
             else
-                console.log url.replace(/\?.+$/, '')
-                result = url.replace(/\?.+$/, '') is rule.pattern
+                result = url is rule.pattern
             return do_actions(result, rule, req, res, options) if result
 
         next()
