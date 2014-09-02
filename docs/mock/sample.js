@@ -6,8 +6,7 @@ module.exports = {
     rules: [
         {
             pattern: "/exact/match/5",
-            respondwith: "exact.json",
-            jsonp: "__jscallback"
+            respondwith: "exact.json"
         },
         {
             pattern: /\/regex\/match\/\d+/,
