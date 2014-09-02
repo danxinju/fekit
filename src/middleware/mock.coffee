@@ -66,6 +66,9 @@ do_actions = (result, rule, req, res, options) ->
     actions = switch
         when typeof actions is 'string'
             get_actions actions
+        when typeof actions is 'function'
+            action:
+                actions
         # 多种 action
         # when util.isArray actions
         #     a = {}
@@ -73,7 +76,7 @@ do_actions = (result, rule, req, res, options) ->
         #         a = utils.extend(a, k)
         #     a
         else
-            actions
+            {}
 
     jobs = ({
             action: ACTION[action_key],
@@ -151,7 +154,7 @@ ACTION =
 
         if callback
             context.res.setHeader "Content-Type", "application/x-javascript"
-            jsonstr = "#{callback}(#{jsonstr})" if callback
+            jsonstr = "#{callback}(#{jsonstr.trim()})" if callback
 
         context.res.write(jsonstr)
         done()
@@ -166,13 +169,16 @@ ACTION =
         }
     ###
     "action": (user_config, context, done) ->
-        act_file = read(context, user_config)
-        #执行该文件
-        sandbox =
-            module:
-                exports: noop
-        vm.runInNewContext(act_file, sandbox)
-        sandbox.module.exports?(context.req, context.res, context)
+        unless typeof user_config is 'function'
+            act_file = read(context, user_config)
+            #执行该文件
+            sandbox =
+                module:
+                    exports: noop
+            vm.runInNewContext(act_file, sandbox)
+            sandbox.module.exports?(context.req, context.res, context)
+        else
+            user_config context.req, context.res, context
         done()
 
     ###
