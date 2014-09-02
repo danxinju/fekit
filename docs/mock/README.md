@@ -25,11 +25,12 @@
 * key 或 `pattern` 属性是字符串，准确匹配 url（包括 query）
 * `pattern` 属性是正则表达式，正则匹配 url
 * `jsonp` 属性指定 jsonp 请求的回调函数名，默认为 `"callback"`
+* value 或 `respondwith` 属性给定文件均为配置文件相对路径
 * value 或 `respondwith` 属性有如下方案：
 
 
 ### raw
-如 `"/exact/match/1"`，`"/exact/match/5"`，`/^\/regex\/match\/a\/\d+/`，指定文件是 .json 文件，路径是配置文件相对路径，.json 文件内容原样返回
+如 `"/exact/match/1"`，`"/exact/match/5"`，`/^\/regex\/match\/a\/\d+/`，指定文件是 .json 文件，.json 文件内容原样返回
 
 
 ### mockjson
