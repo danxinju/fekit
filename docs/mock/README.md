@@ -55,7 +55,7 @@
 如 `"/exact/match/3"`，代理请求指定地址，并将请求结果返回
 
 ### action
-如 `"/exact/match/4"`，给定 js 文件代码如下：
+如 `"/exact/match/4"`，自定义请求处理函数，给定 js 文件代码如下：
 
     module.exports = function(req, res, context) {
         res.end(JSON.stringify({
@@ -63,4 +63,4 @@
         }));
     };
 
-自定义请求处理函数，或如 `/^\/regex\/match\/b\/\d+/` 直接写在配置文件中
+或如 `/^\/regex\/match\/b\/\d+/` 直接写在配置文件中
