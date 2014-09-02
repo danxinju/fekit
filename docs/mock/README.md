@@ -56,3 +56,11 @@
 
 ### action
 如 `"/exact/match/4"`，给定 js 文件代码如下：
+
+    module.exports = function(req, res, context) {
+        res.end(JSON.stringify({
+            "exact": true
+        }));
+    };
+
+自定义请求处理函数，或如 `/^\/regex\/match\/b\/\d+/` 直接写在配置文件中
